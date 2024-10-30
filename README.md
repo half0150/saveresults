@@ -49,3 +49,10 @@ CREATE TABLE leaderboard (
   player VARCHAR(255) NOT NULL,
   wins INT NOT NULL
 );
+
+# .env file
+
+DB_HOST=localhost
+DB_USER=user
+DB_PASSWORD=password
+DB_NAME=databasename
