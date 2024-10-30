@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import 'font-awesome/css/font-awesome.min.css';
 
 const apiPath = '/api/matches';
 
@@ -20,6 +21,7 @@ export default function Home() {
   const [winner, setWinner] = useState('');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [recentMatches, setRecentMatches] = useState<Match[]>([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch(apiPath)
@@ -31,6 +33,11 @@ export default function Home() {
   }, []);
 
   const handleSaveResult = () => {
+    if (!winner) {
+      setError('Please select a winner.');
+      return;
+    }
+
     const match = { player1, player2, winner };
 
     fetch(apiPath, {
@@ -53,12 +60,14 @@ export default function Home() {
     setPlayer1('');
     setPlayer2('');
     setWinner('');
+    setError('');
   };
 
   return (
     <div className="min-h-screen p-8 flex flex-col items-center gap-8">
       <section className="w-full max-w-md p-6">
         <h1 className="text-3xl font-bold mb-4 text-center">Enter Result</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <label className="block mb-1" htmlFor="player1">Player 1</label>
         <input
           className="text-black w-full p-2 mb-4 border rounded-lg"
@@ -94,24 +103,34 @@ export default function Home() {
       </section>
 
       <section className="w-full max-w-md p-6">
-        <h2 className="text-3xl font-bold mb-4 text-center">Leaderboard</h2>
-        <ul className="list-disc pl-5">
-          {leaderboard.map((entry, index) => (
-            <li key={index} className="mb-1">
-              <span className="font-bold">{index + 1}. </span>
-              <span>{entry.player}</span>
-              <span className="ml-2">Wins: {entry.wins}</span>
-            </li>
-          ))}
-        </ul>
+        <h2 className="text-3xl font-bold mb-14 text-center">Leaderboard</h2>
+        <div className=''>
+          <ul className="list-none pl-0">
+            {leaderboard.map((entry, index) => (
+              <li key={index} className="mb-1 flex justify-between items-center">
+                <span className="font-bold">{index + 1}. </span>
+                <span className="flex-1 text-left ml-2">
+                  {entry.player}
+                  {index === 0 && <i className="fa fa-trophy text-yellow-500 ml-2"></i>}
+                </span>
+                <span className="ml-2">Wins: {entry.wins}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <section className="w-full max-w-md p-6">
-        <h2 className="text-3xl font-bold mb-4 text-center">Recent Matches</h2>
-        <ul className="list-disc pl-5">
+        <h2 className="text-3xl font-bold text-center mb-14">Recent Matches</h2>
+        <ul className="list-none pl-0">
           {recentMatches.map((match, index) => (
-            <li key={index} className="mb-1">
-              <span>{match.player1} VS {match.player2} {match.winner === match.player1 ? '1-0' : '0-1'}</span>
+            <li key={index} className="mb-1 flex justify-between items-center">
+              <span className="flex-1 text-left">
+                <span className={match.winner === match.player1 ? 'font-bold text-green-500' : ''}>{match.player1}</span> VS <span className={match.winner === match.player2 ? 'font-bold text-green-500' : ''}>{match.player2}</span>
+              </span>
+              <span>
+                {match.winner === match.player1 ? '1-0' : '0-1'}
+              </span>
             </li>
           ))}
         </ul>
