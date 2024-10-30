@@ -37,17 +37,22 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 # Database SQL
 
-CREATE TABLE matches (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  player1 VARCHAR(255) NOT NULL,
-  player2 VARCHAR(255) NOT NULL,
-  winner VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS matches (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    player1 VARCHAR(255) NOT NULL,
+    player2 VARCHAR(255) NOT NULL,
+    winner VARCHAR(255) NOT NULL,
+    player1_points INT NOT NULL,
+    player2_points INT NOT NULL,
+    match_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE leaderboard (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  player VARCHAR(255) NOT NULL,
-  wins INT NOT NULL
+CREATE TABLE IF NOT EXISTS leaderboard (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    player VARCHAR(255) NOT NULL,
+    wins INT NOT NULL,
+    win_percentage FLOAT NOT NULL DEFAULT 0,
+    UNIQUE (player)
 );
 
 # .env file
