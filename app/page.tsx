@@ -1,23 +1,58 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const apiPath = '/api/matches';
+
+interface Match {
+  player1: string;
+  player2: string;
+  winner: string;
+}
+
+interface LeaderboardEntry {
+  player: string;
+  wins: number;
+}
 
 export default function Home() {
   const [player1, setPlayer1] = useState('');
-  const [wins1, setWins1] = useState('');
   const [player2, setPlayer2] = useState('');
-  const [wins2, setWins2] = useState('');
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [recentMatches, setRecentMatches] = useState([]);
+  const [winner, setWinner] = useState('');
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [recentMatches, setRecentMatches] = useState<Match[]>([]);
+
+  useEffect(() => {
+    fetch(apiPath)
+      .then(response => response.json())
+      .then(data => {
+        setLeaderboard(data.leaderboard);
+        setRecentMatches(data.matches);
+      });
+  }, []);
 
   const handleSaveResult = () => {
-    const newEntry1 = { player: player1, wins: parseInt(wins1) };
-    const newEntry2 = { player: player2, wins: parseInt(wins2) };
-    setLeaderboard([...leaderboard, newEntry1, newEntry2].sort((a, b) => b.wins - a.wins));
-    setRecentMatches([newEntry1, newEntry2, ...recentMatches]);
+    const match = { player1, player2, winner };
+
+    fetch(apiPath, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(match),
+    })
+      .then(response => response.json())
+      .then(() => {
+        fetch(apiPath)
+          .then(response => response.json())
+          .then(data => {
+            setLeaderboard(data.leaderboard);
+            setRecentMatches(data.matches);
+          });
+      });
+
     setPlayer1('');
-    setWins1('');
     setPlayer2('');
-    setWins2('');
+    setWinner('');
   };
 
   return (
@@ -32,14 +67,6 @@ export default function Home() {
           value={player1}
           onChange={(e) => setPlayer1(e.target.value)}
         />
-        <label className="block mb-1" htmlFor="wins1">Wins</label>
-        <input
-          className="text-black w-full p-2 mb-4 border rounded-lg"
-          type="number"
-          placeholder="Wins"
-          value={wins1}
-          onChange={(e) => setWins1(e.target.value)}
-        />
         <label className="block mb-1" htmlFor="player2">Player 2</label>
         <input
           className="text-black w-full p-2 mb-4 border rounded-lg"
@@ -48,14 +75,16 @@ export default function Home() {
           value={player2}
           onChange={(e) => setPlayer2(e.target.value)}
         />
-        <label className="block mb-1" htmlFor="wins2">Wins</label>
-        <input
+        <label className="block mb-1" htmlFor="winner">Winner</label>
+        <select
           className="text-black w-full p-2 mb-4 border rounded-lg"
-          type="number"
-          placeholder="Wins"
-          value={wins2}
-          onChange={(e) => setWins2(e.target.value)}
-        />
+          value={winner}
+          onChange={(e) => setWinner(e.target.value)}
+        >
+          <option value="">Select Winner</option>
+          <option value={player1}>{player1}</option>
+          <option value={player2}>{player2}</option>
+        </select>
         <button
           className="w-full p-2 rounded-lg border"
           onClick={handleSaveResult}
@@ -82,8 +111,7 @@ export default function Home() {
         <ul className="list-disc pl-5">
           {recentMatches.map((match, index) => (
             <li key={index} className="mb-1">
-              <span>{match.player}</span>
-              <span className="ml-2">Wins: {match.wins}</span>
+              <span>{match.player1} VS {match.player2} {match.winner === match.player1 ? '1-0' : '0-1'}</span>
             </li>
           ))}
         </ul>
