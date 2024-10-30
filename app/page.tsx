@@ -1,23 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
 import 'font-awesome/css/font-awesome.min.css';
+import { Match, LeaderboardEntry } from './types';
 
 const apiPath = '/api/matches';
-
-interface Match {
-  player1: string;
-  player2: string;
-  winner: string;
-  player1_points: number;
-  player2_points: number;
-  match_date: string;
-}
-
-interface LeaderboardEntry {
-  player: string;
-  wins: number;
-  win_percentage: number;
-}
 
 export default function Home() {
   const [player1, setPlayer1] = useState('');
