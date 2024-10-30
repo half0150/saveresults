@@ -65,6 +65,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-8 flex flex-col items-center gap-8">
+      {/* form section */}
       <section className="w-full max-w-md p-6">
         <h1 className="text-3xl font-bold mb-4 text-center">Enter Result</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -74,34 +75,30 @@ export default function Home() {
           type="text"
           placeholder="Player 1"
           value={player1}
-          onChange={(e) => setPlayer1(e.target.value)}
-        />
+          onChange={(e) => setPlayer1(e.target.value)} />
         <label className="block mb-1" htmlFor="player2">Player 2</label>
         <input
           className="text-black w-full p-2 mb-4 border rounded-lg"
           type="text"
           placeholder="Player 2"
           value={player2}
-          onChange={(e) => setPlayer2(e.target.value)}
-        />
+          onChange={(e) => setPlayer2(e.target.value)} />
         <label className="block mb-1" htmlFor="winner">Winner</label>
         <select
           className="text-black w-full p-2 mb-4 border rounded-lg"
           value={winner}
-          onChange={(e) => setWinner(e.target.value)}
-        >
+          onChange={(e) => setWinner(e.target.value)}>
           <option value="">Select Winner</option>
           <option value={player1}>{player1}</option>
           <option value={player2}>{player2}</option>
         </select>
         <button
           className="w-full p-2 rounded-lg border"
-          onClick={handleSaveResult}
-        >
+          onClick={handleSaveResult}>
           Save Result
         </button>
       </section>
-
+      {/* leaderboard section */}
       <section className="w-full max-w-md p-6">
         <h2 className="text-3xl font-bold mb-14 text-center">Leaderboard</h2>
         <div className=''>
@@ -119,7 +116,7 @@ export default function Home() {
           </ul>
         </div>
       </section>
-
+      {/* recent matches section */}
       <section className="w-full max-w-md p-6">
         <h2 className="text-3xl font-bold text-center mb-14">Recent Matches</h2>
         <ul className="list-none pl-0">
