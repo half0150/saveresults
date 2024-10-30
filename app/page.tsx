@@ -8,17 +8,23 @@ interface Match {
   player1: string;
   player2: string;
   winner: string;
+  player1_points: number;
+  player2_points: number;
+  match_date: string;
 }
 
 interface LeaderboardEntry {
   player: string;
   wins: number;
+  win_percentage: number;
 }
 
 export default function Home() {
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');
   const [winner, setWinner] = useState('');
+  const [player1Points, setPlayer1Points] = useState('');
+  const [player2Points, setPlayer2Points] = useState('');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [recentMatches, setRecentMatches] = useState<Match[]>([]);
   const [error, setError] = useState('');
@@ -38,7 +44,13 @@ export default function Home() {
       return;
     }
 
-    const match = { player1, player2, winner };
+    const match = { 
+      player1, 
+      player2, 
+      winner, 
+      player1_points: parseInt(player1Points), 
+      player2_points: parseInt(player2Points) 
+    };
 
     fetch(apiPath, {
       method: 'POST',
@@ -60,6 +72,8 @@ export default function Home() {
     setPlayer1('');
     setPlayer2('');
     setWinner('');
+    setPlayer1Points('');
+    setPlayer2Points('');
     setError('');
   };
 
@@ -92,6 +106,20 @@ export default function Home() {
           <option value={player1}>{player1}</option>
           <option value={player2}>{player2}</option>
         </select>
+        <label className="block mb-1" htmlFor="player1Points">Player 1 Points</label>
+        <input
+          className="text-black w-full p-2 mb-4 border rounded-lg"
+          type="number"
+          placeholder="Player 1 Points"
+          value={player1Points}
+          onChange={(e) => setPlayer1Points(e.target.value)} />
+        <label className="block mb-1" htmlFor="player2Points">Player 2 Points</label>
+        <input
+          className="text-black w-full p-2 mb-4 border rounded-lg"
+          type="number"
+          placeholder="Player 2 Points"
+          value={player2Points}
+          onChange={(e) => setPlayer2Points(e.target.value)} />
         <button
           className="w-full p-2 rounded-lg border"
           onClick={handleSaveResult}>
@@ -111,6 +139,7 @@ export default function Home() {
                   {index === 0 && <i className="fa fa-trophy text-yellow-500 ml-2"></i>}
                 </span>
                 <span className="ml-2">Wins: {entry.wins}</span>
+                <span className="ml-2">Win%: {Number(entry.win_percentage).toFixed(2)}</span>
               </li>
             ))}
           </ul>
@@ -121,13 +150,16 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center mb-14">Recent Matches</h2>
         <ul className="list-none pl-0">
           {recentMatches.map((match, index) => (
-            <li key={index} className="mb-1 flex justify-between items-center">
-              <span className="flex-1 text-left">
-                <span className={match.winner === match.player1 ? 'font-bold text-green-500' : ''}>{match.player1}</span> VS <span className={match.winner === match.player2 ? 'font-bold text-green-500' : ''}>{match.player2}</span>
-              </span>
-              <span>
-                {match.winner === match.player1 ? '1-0' : '0-1'}
-              </span>
+            <li key={index} className="mb-1 flex flex-col">
+              <div className="flex justify-between items-center">
+                <span className="flex-1 text-left">
+                  <span className={match.winner === match.player1 ? 'font-bold text-green-500' : ''}>{match.player1}</span> VS <span className={match.winner === match.player2 ? 'font-bold text-green-500' : ''}>{match.player2}</span>
+                </span>
+                <span>{match.player1_points} - {match.player2_points}</span>
+              </div>
+              <div className="text-right">
+                <span>Date: {new Date(match.match_date).toLocaleDateString()}</span>
+              </div>
             </li>
           ))}
         </ul>
